@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import {createPinia} from 'pinia'
+
 
 // jQuery 관련
 import jQuery from 'jquery'
@@ -76,8 +78,11 @@ import '../src/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js'
 import '../src/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js'
 
 const app = createApp(App);
+const pinia = createPinia()
+
 
 app.use(router);
+app.use(pinia);
 app.mount('#app');
 
 // jQuery 플러그인 초기화를 하는 것이 아닌 app.config로 ㄱㄱ
