@@ -8,6 +8,8 @@
 
 <script>
 import ListPage from "./ListPage.vue";
+import { useAPI } from "@/axios/useAPI";
+
 export default {
   components: {
     ListPage,
@@ -19,8 +21,8 @@ export default {
         "환불 내역 아이디",
         "환불 금액",
         "환불 수수료",
-        "제공자",
-        "요청자",
+        "제공자 아이디",
+        "요청자 아이디",
         "환불 날짜",
       ],
       tableRows: [],
@@ -30,77 +32,22 @@ export default {
     this.fetchData();
   },
   methods: {
-    fetchData() {
-      // 서버 대신 임시 데이터를 사용
-      const mockData = [
-        {
-          category: "Art",
-          title: "Masterclass Art",
-          tuition: 20000,
-          max_capacity: 5,
-          level: "Advanced",
-          approved_date: "2024-09-18",
-        },
-        {
-          category: "Sports",
-          title: "Intro to Sports",
-          tuition: 5000,
-          max_capacity: 10,
-          level: "Advanced",
-          approved_date: "2024-07-30",
-        },
-        {
-          category: "Cooking",
-          title: "Hands-On Cooking",
-          tuition: 15000,
-          max_capacity: 15,
-          level: "Advanced",
-          approved_date: "2023-11-17",
-        },
-        {
-          category: "Art",
-          title: "Hands-On Art",
-          tuition: 20000,
-          max_capacity: 15,
-          level: "Intermediate",
-          approved_date: "2024-09-21",
-        },
-        {
-          category: "Technology",
-          title: "Intro to Technology",
-          tuition: 15000,
-          max_capacity: 20,
-          level: "Intermediate",
-          approved_date: "2024-08-18",
-        },
-        {
-          category: "Technology",
-          title: "Masterclass Technology",
-          tuition: 12000,
-          max_capacity: 25,
-          level: "Beginner",
-          approved_date: "2024-01-21",
-        },
-        {
-          category: "Music",
-          title: "Hands-On Music",
-          tuition: 15000,
-          max_capacity: 5,
-          level: "Advanced",
-          approved_date: "2024-07-13",
-        },
-        {
-          category: "Sports",
-          title: "Hands-On Sports",
-          tuition: 15000,
-          max_capacity: 5,
-          level: "Intermediate",
-          approved_date: "2024-10-26",
-        },
-      ];
+    async fetchData() {
+      const { get } = useAPI();
+      try {
+        const response = await get("/admin/refunds");
 
-      // JSON 데이터를 rows 형식으로 변환
-      this.tableRows = mockData.map((row) => Object.values(row));
+        this.tableRows = response.data.data.map((refund) => [
+          refund.refundLogId,
+          refund.refundAmount,
+          refund.refundRate,
+          refund.userId,
+          refund.courseOwnerId,
+          refund.requestDate,
+        ]);
+      } catch (error) {
+        console.error("데이터를 불러오는 중 오류가 발생했습니다:", error);
+      }
     },
   },
 };

@@ -1,6 +1,5 @@
 <template>
   <div>
-  <div v-if="!dataLoaded">로딩 중...</div>
   <ListPage
     :tableRows="tableRows"
     :tableHeaders="tableHeaders"
@@ -31,7 +30,6 @@ export default {
         "종료날짜",
       ],
       tableRows: [],
-      dataLoaded: false,
     };
   },
   created() {
@@ -51,7 +49,6 @@ export default {
           coupon.startDate,
           coupon.endDate,
         ]);
-        this.dataLoaded = true;
       } catch (error) {
         console.error("데이터를 불러오는 중 오류가 발생했습니다:", error);
       }

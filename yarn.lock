@@ -4246,7 +4246,7 @@ jsonfile@^6.0.1:
 
 jwt-decode@^4.0.0:
   version "4.0.0"
-  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
+  resolved "https://registry.npmjs.org/jwt-decode/-/jwt-decode-4.0.0.tgz"
   integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
 
 keyv@^4.5.3:
@@ -4280,6 +4280,16 @@ launch-editor@^2.2.1, launch-editor@^2.6.0, launch-editor@^2.9.1:
   dependencies:
     picocolors "^1.0.0"
     shell-quote "^1.8.1"
+
+leaflet.heat@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/leaflet.heat/-/leaflet.heat-0.2.0.tgz#109d8cf586f0adee41f05aff031e27a77fecc229"
+  integrity sha512-Cd5PbAA/rX3X3XKxfDoUGi9qp78FyhWYurFg3nsfhntcM/MCNK08pRkf4iEenO1KNqwVPKCmkyktjW3UD+h9bQ==
+
+leaflet@^1.9.4:
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.9.4.tgz#23fae724e282fa25745aff82ca4d394748db7d8d"
+  integrity sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==
 
 levn@^0.4.1:
   version "0.4.1"
@@ -4948,7 +4958,7 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
 
 pinia@^2.2.6:
   version "2.2.6"
-  resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.2.6.tgz#ff93f35b8c02033eaedc8c92ad5f10f215d6c804"
+  resolved "https://registry.npmjs.org/pinia/-/pinia-2.2.6.tgz"
   integrity sha512-vIsR8JkDN5Ga2vAxqOE2cJj4VtsHnzpR1Fz30kClxlh0yCHfec6uoMeM3e/ddqmwFUejK3NlrcQa/shnpyT4hA==
   dependencies:
     "@vue/devtools-api" "^6.6.3"
@@ -6200,7 +6210,7 @@ vary@~1.1.2:
 
 vue-demi@^0.14.10:
   version "0.14.10"
-  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.10.tgz#afc78de3d6f9e11bf78c55e8510ee12814522f04"
+  resolved "https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.10.tgz"
   integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
 
 vue-eslint-parser@^8.0.1:
