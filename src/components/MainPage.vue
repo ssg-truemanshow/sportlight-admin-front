@@ -404,8 +404,8 @@ export default {
             intersect: false,
           },
           animation: {
-            duration: 1000, // 애니메이션 지속 시간 (1초)
-            easing: "easeInOutQuad", // 애니메이션 효과
+            duration: 5000,
+            easing: "easeInOutQuad",
           },
         },
       });
