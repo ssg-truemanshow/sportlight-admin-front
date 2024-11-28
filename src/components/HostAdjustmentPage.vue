@@ -33,7 +33,7 @@
                           role="group"
                           aria-label="Approval Buttons"
                         >
-                          <button type="button" class="btn btn-warning mr-2">
+                          <button type="button" class="btn btn-warning mr-2" @click="openApprovalModal(index)">
                             <i class="far fa-thumbs-up"></i> 승인
                           </button>
                           <button
@@ -54,6 +54,39 @@
         </div>
       </div>
     </div>
+    <!-- Approval Modal -->
+    <div
+      class="modal fade"
+      id="approvalModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="approvalModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="approvalModalLabel">승인 확인</h5>
+          </div>
+          <div class="modal-body">
+            해당 정산을 승인하시겠습니까?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+              @click="closeApprovalModal"
+            >
+              취소
+            </button>
+            <button type="button" class="btn btn-primary" @click="modifyStatus('APPROVAL')">
+              승인
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Reject Modal -->
     <div
       class="modal fade"
@@ -66,22 +99,10 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="rejectModalLabel">거절 사유</h5>
+            <h5 class="modal-title" id="rejectModalLabel">거절 확인</h5>
           </div>
           <div class="modal-body">
-            <p>
-              해당 정산을 거절하시겠습니까?<br />이메일을 통해 사유를 설명할
-              수 있습니다.
-            </p>
-            <div class="form-group">
-              <label for="rejectReason">거절 사유를 입력하세요:</label>
-              <textarea
-                id="rejectReason"
-                class="form-control"
-                v-model="rejectReason"
-                rows="4"
-              ></textarea>
-            </div>
+            해당 정산을 거절하시겠습니까?
           </div>
           <div class="modal-footer">
             <button
@@ -92,8 +113,8 @@
             >
               취소
             </button>
-            <button type="button" class="btn btn-primary" @click="sendEmail(index)">
-              이메일 보내기
+            <button type="button" class="btn btn-danger" @click="modifyStatus('FAIL')">
+              거절
             </button>
           </div>
         </div>
@@ -103,119 +124,73 @@
 </template>
 
 <script>
+import { useAPI } from "@/axios/useAPI";
+
 export default {
   data() {
     return {
-      jsonData: {
-        columns: [
-          "정산 아이디",
-          "회원 아이디",
-          "요청 정산액",
-          "정산 수수료",
-          "요청 날짜",
-          "승인 / 거절"
-        ],
-        data: [
-          {
-            Category: "요가",
-            Title: "초급 요가 클래스",
-            Price: "30,000원",
-            MaxPeople: 10,
-            RequestContent: "신규 개설 요청",
-          },
-          {
-            Category: "필라테스",
-            Title: "필라테스 기본 동작",
-            Price: "40,000원",
-            MaxPeople: 8,
-            RequestContent: "신규 개설 요청",
-          },
-          {
-            Category: "댄스",
-            Title: "K-POP 댄스 클래스",
-            Price: "35,000원",
-            MaxPeople: 15,
-            RequestContent: "삭제 요청",
-          },
-          {
-            Category: "수영",
-            Title: "자유형 마스터 클래스",
-            Price: "50,000원",
-            MaxPeople: 12,
-            RequestContent: "신규 개설 요청",
-          },
-          {
-            Category: "헬스",
-            Title: "근력 운동 기초",
-            Price: "45,000원",
-            MaxPeople: 20,
-            RequestContent: "삭제 요청",
-          },
-          {
-            Category: "스피닝",
-            Title: "스피닝 초급 클래스",
-            Price: "25,000원",
-            MaxPeople: 10,
-            RequestContent: "신규 개설 요청",
-          },
-          {
-            Category: "명상",
-            Title: "마음 챙김 명상",
-            Price: "20,000원",
-            MaxPeople: 30,
-            RequestContent: "신규 개설 요청",
-          },
-          {
-            Category: "축구",
-            Title: "축구 기본 기술 연습",
-            Price: "35,000원",
-            MaxPeople: 25,
-            RequestContent: "삭제 요청",
-          },
-          {
-            Category: "테니스",
-            Title: "초보자 테니스 레슨",
-            Price: "60,000원",
-            MaxPeople: 8,
-            RequestContent: "신규 개설 요청",
-          },
-          {
-            Category: "복싱",
-            Title: "복싱 입문 클래스",
-            Price: "55,000원",
-            MaxPeople: 10,
-            RequestContent: "삭제 요청",
-          },
-        ],
-      },
-      tableHeaders: [],
+      tableHeaders: [
+        "정산 아이디",
+        "회원 아이디",
+        "요청 정산액",
+        "정산 수수료",
+        "요청 날짜",
+        "승인 / 거절",
+      ],
       tableRows: [],
-      rejectReason: "",
+      selectedIndex: null,
     };
   },
   created() {
-    // JSON 데이터를 props 형식으로 변환
-    this.tableHeaders = this.jsonData.columns;
-    this.tableRows = this.jsonData.data.map((row) => Object.values(row));
+    this.fetchData();
   },
   methods: {
-    openRejectModal(index) {
-      // Show the reject modal
-      $("#rejectModal").modal("show");
-    },
-    sendEmail(index) {
-      if (this.rejectReason.trim() === "") {
-        alert("거절 사유를 입력해주세요.");
-        return;
+    async fetchData() {
+      const { get } = useAPI();
+      try {
+        const response = await get("/admin/adjustments");
+
+        this.tableRows = response.data.data.map((settlement) => [
+          settlement.adjustmentId,
+          settlement.userId,
+          settlement.requestAmount,
+          settlement.adjustedCharge,
+          settlement.reqDate,
+        ]);
+      } catch (error) {
+        console.error("데이터를 불러오는 중 오류가 발생했습니다:", error);
       }
-      // Logic to send the email with the reject reason goes here
-      console.log("Sending email with reason:", this.rejectReason);
-      // After sending the email, close the modal
-      $("#rejectModal").modal("hide");
-      this.rejectReason = ""; // Clear the reason after sending
+    },
+    openApprovalModal(index) {
+      this.selectedIndex = index;
+      $("#approvalModal").modal("show");
+    },
+    closeApprovalModal() {
+      $("#approvalModal").modal("hide");
+    },
+    openRejectModal(index) {
+      this.selectedIndex = index;
+      $("#rejectModal").modal("show");
     },
     closeRejectModal() {
       $("#rejectModal").modal("hide");
+    },
+    async modifyStatus(status) {
+      const { patch } = useAPI();
+      const selectedSettlement = this.tableRows[this.selectedIndex];
+      const adjustmentId = selectedSettlement[0];
+      try {
+        await patch(`/admin/adjustments/${adjustmentId}/status`, { status });
+        this.fetchData();
+      } catch (error) {
+        console.error("상태 변경 중 오류가 발생했습니다:", error);
+      } finally {
+        if (status === 'APPROVAL') {
+          this.closeApprovalModal();
+        } else {
+          this.closeRejectModal();
+        }
+      }
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <h1 style="margin-left: 50px">Dashboard Page</h1>
+  <!-- <h1 style="margin-left: 50px">Dashboard Page</h1> -->
   <div class="row">
     <div class="col-lg-3 col-md-64">
       <!-- 각 카드의 너비를 조정 -->
@@ -46,7 +46,7 @@
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">지역별 클래스 현황</h4>
-          <div id="map" style="height: 500px; width: 100%"></div>
+          <canvas id="courseLocationChart" style="height: 500px; width: 100%"></canvas>
         </div>
       </div>
     </div>
@@ -68,8 +68,6 @@
 <script>
 import { Chart, registerables } from "chart.js";
 import { useAPI } from "@/axios/useAPI";
-import L from "leaflet";
-import "leaflet.heat";
 
 Chart.register(...registerables);
 
@@ -104,6 +102,7 @@ export default {
           this.updateAgeDistributionChart();
           this.updateGenderAgeGroupCourseChart();
           this.initCategoryChart();
+          this.initCourseLocationChart();
         }
       } catch (error) {
         console.error(
@@ -325,6 +324,52 @@ export default {
           plugins: {
             legend: {
               position: "top", // 범례 위치
+            },
+          },
+        },
+      });
+    },
+    initCourseLocationChart() {
+      const ctx = document
+        .getElementById("courseLocationChart")
+        .getContext("2d");
+      const data = this.courseLocation.map((item) => ({
+        x: item.longitude,
+        y: item.latitude,
+        r: item.courseCount, // 버블 크기는 클래스 수로 설정
+      }));
+
+      new Chart(ctx, {
+        type: "bubble",
+        data: {
+          datasets: [
+            {
+              label: "지역별 클래스 현황",
+              data: data,
+              backgroundColor: "rgba(75, 192, 192, 0.6)",
+              borderColor: "rgba(75, 192, 192, 1)",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "경도",
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "위도",
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              position: "top",
             },
           },
         },
