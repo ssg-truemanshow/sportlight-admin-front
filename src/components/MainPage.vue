@@ -1,5 +1,5 @@
 <template>
-  <h1 style="margin-left: 50px">MainPage</h1>
+  <!-- <h1 style="margin-left: 50px">MainPage</h1> -->
   <div class="container-fluid">
     <div class="card-group">
       <div class="card border-right">
@@ -53,7 +53,7 @@
           <div class="d-flex d-lg-flex d-md-block align-items-center">
             <div>
               <h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium">
-                {{ totalDailySaleAmount }} 원
+                {{ totalDailySaleAmount.toLocaleString() }} 원
               </h2>
               <h6
                 class="text-muted font-weight-normal mb-0 w-100 text-truncate"
@@ -71,7 +71,7 @@
           <div class="d-flex d-lg-flex d-md-block align-items-center">
             <div>
               <h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium">
-                {{ averageDailySaleAmount }} 원
+                {{ averageDailySaleAmount.toLocaleString() }} 원
               </h2>
               <h6
                 class="text-muted font-weight-normal mb-0 w-100 text-truncate"
@@ -87,7 +87,7 @@
           <div class="d-flex d-lg-flex d-md-block align-items-center">
             <div>
               <h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium">
-                {{ averageMonthlySaleAmount }} 원
+                {{ averageMonthlySaleAmount.toLocaleString() }} 원
               </h2>
               <h6
                 class="text-muted font-weight-normal mb-0 w-100 text-truncate"
@@ -103,7 +103,7 @@
           <div class="d-flex d-lg-flex d-md-block align-items-center">
             <div>
               <h2 class="text-dark mb-1 w-100 text-truncate font-weight-medium">
-                {{ averageYearlySaleAmount }} 원
+                {{ averageYearlySaleAmount.toLocaleString() }} 원
               </h2>
               <h6
                 class="text-muted font-weight-normal mb-0 w-100 text-truncate"
@@ -116,22 +116,33 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-6 col-md-12">
+      <div class="col-12">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">일일 매출 동향</h4>
+            <div class="d-flex mb-3 align-items-center">
+              <div class="d-flex align-items-center mr-3">
+                <label for="startDate" class="mr-2 mb-0">시작 날짜</label>
+                <input type="date" id="startDate" v-model="startDate" class="form-control" />
+              </div>
+              <div class="d-flex align-items-center mr-3">
+                <label for="endDate" class="mr-2 mb-0">종료 날짜</label>
+                <input type="date" id="endDate" v-model="endDate" class="form-control" />
+              </div>
+              <button @click="filterDailySales" class="btn btn-primary">적용</button>
+            </div>
             <canvas
               id="dailySalesChart"
-              style="height: 200px; width: 100%"
+              style="height: 400px; width: 100%"
             ></canvas>
           </div>
         </div>
       </div>
-      <div class="col-lg-6 col-md-12">
+      <div class="col-12">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">클래스 변동 추이</h4>
-            <canvas id="classchart" style="height: 200px; width: 100%"></canvas>
+            <canvas id="classchart" style="height: 400px; width: 100%"></canvas>
           </div>
         </div>
       </div>
@@ -224,6 +235,9 @@ export default {
       openCourseCounts: [],
       courseTop: [],
       hostTop: [],
+      startDate: null,
+      endDate: null,
+      dailySalesChart: null, // Chart instance for daily sales
     };
   },
   created() {
@@ -234,7 +248,6 @@ export default {
       const { get } = useAPI();
       try {
         const response = await get("/admin/main");
-        console.log(response.data);
         if (response.data && response.data.data) {
           this.userCount = response.data.data.userCount || 0;
           this.courseCount = response.data.data.courseCount || 0;
@@ -255,63 +268,57 @@ export default {
           );
           this.courseTop = response.data.data.courseTop || [];
           this.hostTop = response.data.data.hostTop || [];
-          console.log("Host Top 데이터:", this.hostTop);
 
-          // 데이터가 로드된 후 차트를 생성
-          this.createDailySalesChart();
+          console.log("강사 탑 쓰리 : ", this.hostTop);
+          this.renderDailySalesChart();
           this.createOpenCourseChart();
         }
       } catch (error) {
         console.error("메인 데이터를 불러오는 중 오류가 발생했습니다:", error);
       }
     },
-    createDailySalesChart() {
-      if (this.allDailySales.length === 0) {
-        console.warn("일일 매출 데이터가 없습니다.");
-        return;
+    filterDailySales() {
+      const filteredData = this.allDailySales.filter((sale) => {
+        const saleDate = new Date(sale.dsdate);
+        return (
+          (!this.startDate || saleDate >= new Date(this.startDate)) &&
+          (!this.endDate || saleDate <= new Date(this.endDate))
+        );
+      });
+      this.renderDailySalesChart(filteredData);
+    },
+    renderDailySalesChart(data = this.allDailySales) {
+      if (this.dailySalesChart) {
+        this.dailySalesChart.clear();
+        this.dailySalesChart.destroy();
       }
-
-      // allDailySales 데이터를 차트 데이터 형식에 맞게 변환
-      const salesData = this.allDailySales.map((sale) => ({
-        x: new Date(
-          sale.dsdate[0],
-          sale.dsdate[1] - 1,
-          sale.dsdate[2],
-          sale.dsdate[3],
-          sale.dsdate[4]
-        ), // dsdate 배열을 Date 객체로 변환
-        y: Number(sale.totalAmount), // 매출 금액을 숫자로 변환
-      }));
-
       const ctx = document.getElementById("dailySalesChart").getContext("2d");
-
-      new Chart(ctx, {
+      const formattedData = data.map((sale) => ({
+        x: new Date(sale.dsdate),
+        y: sale.totalAmount,
+      }));
+      this.dailySalesChart = new Chart(ctx, {
         type: "line",
         data: {
           datasets: [
             {
-              label: "일일 매출 추이",
-              data: salesData,
-              borderColor: "#42A5F5", // 선 색상
-              backgroundColor: "rgba(66, 165, 245, 0.2)", // 영역 배경 색상 (투명도 추가)
-              borderWidth: 2,
-              tension: 0.3, // 부드러운 곡선 효과
-              fill: true, // 선 아래 부분 채우기
+              label: "일일 매출",
+              data: formattedData,
+              fill: false,
+              borderColor: "#42A5F5",
+              tension: 0.1,
+              pointRadius: 3,
+              pointBackgroundColor: "#42A5F5",
             },
           ],
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true, // 차트 비율 유지
           scales: {
             x: {
               type: "time",
               time: {
-                unit: "day", // 일 단위로 설정
-                tooltipFormat: "MMM d, yyyy", // 툴팁 형식
-                displayFormats: {
-                  day: "MMM d", // X축에 표시될 날짜 형식
-                },
+                unit: "day",
               },
               title: {
                 display: true,
@@ -323,31 +330,12 @@ export default {
                 display: true,
                 text: "매출 금액 (원)",
               },
-              beginAtZero: true, // Y축을 0부터 시작
+              beginAtZero: true,
             },
-          },
-          plugins: {
-            legend: {
-              display: true,
-              position: "top",
-            },
-            tooltip: {
-              mode: "index",
-              intersect: false,
-            },
-          },
-          interaction: {
-            mode: "index",
-            intersect: false,
-          },
-          animation: {
-            duration: 1000, // 애니메이션 지속 시간 (1초)
-            easing: "easeInOutQuad", // 애니메이션 효과
           },
         },
       });
     },
-
     createOpenCourseChart() {
       if (this.openCourseCounts.length === 0) {
         console.warn("클래스 데이터가 없습니다.");
