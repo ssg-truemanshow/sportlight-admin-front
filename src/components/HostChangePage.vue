@@ -156,7 +156,7 @@ export default {
     async approveRequest(id) {
       const { patch } = useAPI();
       try {
-        await patch(`/admin/host-requests/${id}/approve`);
+        await patch(`/admin/host-requests/${id}/status`, "APPROVED");
         alert("승인되었습니다.");
         this.fetchData();
         $("#detailModal").modal("hide");
@@ -167,7 +167,7 @@ export default {
     async rejectRequest(id) {
       const { patch } = useAPI();
       try {
-        await patch(`/admin/host-requests/${id}/reject`);
+        await patch(`/admin/host-requests/${id}/status`, "REJECTED");
         alert("거절되었습니다.");
         this.fetchData();
         $("#detailModal").modal("hide");

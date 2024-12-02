@@ -180,7 +180,7 @@ export default {
       const selectedSettlement = this.tableRows[this.selectedIndex];
       const adjustmentId = selectedSettlement[0];
       try {
-        await patch(`/admin/adjustments/${adjustmentId}/status`, { status });
+        await patch(`/admin/adjustments/${adjustmentId}/status`, status );
         this.fetchData();
       } catch (error) {
         console.error("상태 변경 중 오류가 발생했습니다:", error);

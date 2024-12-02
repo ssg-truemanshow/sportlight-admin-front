@@ -1,34 +1,28 @@
 <template>
-  <!-- <h1 style="margin-left: 50px">Dashboard Page</h1> -->
   <div class="row">
     <div class="col-lg-3 col-md-64">
-      <!-- 각 카드의 너비를 조정 -->
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">강사&회원 비율</h4>
           <canvas
             id="instructorMemberChart"
-            style="height: 200px; width: 100%"
+            style="height: 330px; width: 100%"
           ></canvas>
-          <!-- 원형 차트 추가 -->
         </div>
       </div>
     </div>
     <div class="col-lg-3 col-md-4">
-      <!-- 각 카드의 너비를 조정 -->
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">연령 별 유저 비율</h4>
           <canvas
             id="ageDistributionChart"
-            style="height: 200px; width: 100%"
+            style="height: 330px; width: 100%"
           ></canvas>
-          <!-- 원형 차트 추가 -->
         </div>
       </div>
     </div>
     <div class="col-lg-6 col-md-12">
-      <!-- 각 카드의 너비를 조정 -->
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">성별&연령 별 클래스 수강 갯수</h4>
@@ -36,7 +30,6 @@
             id="genderAgeClassChart"
             style="height: 330px; width: 100%"
           ></canvas>
-          <!-- 이중 막대 그래프 추가 -->
         </div>
       </div>
     </div>

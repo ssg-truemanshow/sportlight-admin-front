@@ -131,6 +131,7 @@ export default {
   data() {
     return {
       tableHeaders: [
+        "아이디",
         "카테고리",
         "제목",
         "가격",
@@ -152,6 +153,7 @@ export default {
         const response = await get("/admin/course-requests");
 
         this.tableRows = response.data.data.map((request) => [
+          request.courseId,
           request.categoryName,
           request.courseTitle,
           request.courseTuition,
@@ -179,10 +181,11 @@ export default {
     async modifyStatus(status) {
       const { patch } = useAPI();
       const selectedRequest = this.tableRows[this.selectedIndex];
-      const adjustmentId = selectedRequest[0];
+      const id = selectedRequest[0];
+
       try {
-        await patch(`/admin/adjustments/${adjustmentId}/status`, { status });
-        console.log(`Request ${status} successful for ID:`, adjustmentId);
+        await patch(`/admin/course-requests/${id}/status`, status );
+        console.log(`Request ${status} successful for ID:`, id);
         this.fetchData(); // Refresh the data after modification
       } catch (error) {
         console.error("상태 변경 중 오류가 발생했습니다:", error);
