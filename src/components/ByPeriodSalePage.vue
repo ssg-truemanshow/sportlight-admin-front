@@ -118,31 +118,31 @@ export default {
           // 일별 매출 데이터 처리
           this.salesData.daily = (salesData.dailySales || []).map((sale) => [
             sale.id,
-            sale.totalAmount,
-            sale.vat,
-            sale.additionalRevenue,
-            sale.netRevenue,
-            sale.dsdate,
+            this.formatCurrency(sale.totalAmount),
+            this.formatCurrency(sale.vat),
+            this.formatCurrency(sale.additionalRevenue),
+            this.formatCurrency(sale.netRevenue),
+            this.formatDate(sale.dsdate),
           ]);
 
           // 월별 매출 데이터 처리
           this.salesData.monthly = (salesData.monthlySales || []).map((sale) => [
             sale.id,
-            sale.totalAmount,
-            sale.vat,
-            sale.additionalRevenue,
-            sale.netRevenue,
-            sale.dsdate,
+            this.formatCurrency(sale.totalAmount),
+            this.formatCurrency(sale.vat),
+            this.formatCurrency(sale.additionalRevenue),
+            this.formatCurrency(sale.netRevenue),
+            this.formatDate(sale.dsdate),
           ]);
 
           // 연별 매출 데이터 처리
           this.salesData.yearly = (salesData.yearlySales || []).map((sale) => [
             sale.id,
-            sale.totalAmount,
-            sale.vat,
-            sale.additionalRevenue,
-            sale.netRevenue,
-            sale.dsdate,
+            this.formatCurrency(sale.totalAmount),
+            this.formatCurrency(sale.vat),
+            this.formatCurrency(sale.additionalRevenue),
+            this.formatCurrency(sale.netRevenue),
+            this.formatDate(sale.dsdate),
           ]);
 
           console.log("Processed Sales Data: ", this.salesData);
@@ -172,6 +172,17 @@ export default {
       if (this.currentPage > 1) {
         this.currentPage--;
       }
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}년 ${month}월 ${day}일`;
+    },
+    formatCurrency(value) {
+      return `${value.toLocaleString()}원`;
     },
   },
 };

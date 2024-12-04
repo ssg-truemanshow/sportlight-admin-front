@@ -156,8 +156,8 @@ export default {
           request.courseId,
           request.categoryName,
           request.courseTitle,
-          request.courseTuition,
-          request.maxCapacity,
+          this.formatCurrency(request.courseTuition),
+          this.formatPerson(request.maxCapacity),
           request.status,
         ]);
       } catch (error) {
@@ -197,6 +197,12 @@ export default {
         }
       }
     },
+    formatCurrency(value) {
+      return `${value.toLocaleString()}원`;
+    },
+    formatPerson(value){
+      return `${value}명`;
+    }
   },
 };
 </script>

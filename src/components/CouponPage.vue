@@ -44,15 +44,29 @@ export default {
         this.tableRows = response.data.data.map((coupon) => [
           coupon.couponName,
           coupon.eventName,
-          coupon.discountRate,
-          coupon.couponNum,
-          coupon.startDate,
-          coupon.endDate,
+          this.formatPercentage(coupon.discountRate),
+          this.formatNumber(coupon.couponNum),
+          this.formatDate(coupon.startDate),
+          this.formatDate(coupon.endDate),
         ]);
       } catch (error) {
         console.error("데이터를 불러오는 중 오류가 발생했습니다:", error);
       }
     },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}년 ${month}월 ${day}일`;
+    },
+    formatPercentage(value) {
+      return `${value}%`;
+    },
+    formatNumber(value){
+      return `${value}개`;
+    }
   },
 };
 </script>
