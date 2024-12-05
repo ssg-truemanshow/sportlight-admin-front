@@ -70,7 +70,14 @@
             </div>
             <div>
               <h6>보유자격증</h6>
-              <p>{{ modalData.certification }}</p>
+              <!-- <p>{{ modalData.certification }}</p> -->
+              <button
+                type="button"
+                class="btn btn-link"
+                @click="downloadCertification(modalData.certification)"
+              >
+                자격증 보기
+              </button>
             </div>
             <div>
               <h6>포트폴리오</h6>
@@ -173,6 +180,27 @@ export default {
         $("#detailModal").modal("hide");
       } catch (error) {
         console.error("거절 처리 중 오류가 발생했습니다:", error);
+      }
+    },
+    async downloadCertification(id) {
+      const { get } = useAPI();
+      try {
+        const res = await get(`/files/${id}/download`, {
+          responseType: "blob",
+        });
+        const fileName =
+            res.headers["Content-Disposition"].split("filename=")[1];
+            console.log("aksjhdkajhsdkajhsdkjahskdjha",fileName);
+          const url = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", decodeURI(fileName));
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("자격증 다운로드 중 오류가 발생했습니다:", error);
       }
     },
     formatDate(dateString) {
