@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 
 export const useAPI = () => {
-    const baseURL = "http://localhost:8080";
+    const baseURL = "http://localhost:8080/api";
     const auth = useAuthStore();
     const headers = {
         "Content-Type": "application/json",
